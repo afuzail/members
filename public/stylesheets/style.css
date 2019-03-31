@@ -1,8 +1,9 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.bg-image {
+  background-image: url('../images/login.jpg');
+  background-size: cover;
+  background-position: center;
 }
 
-a {
-  color: #00B7FF;
+.image, .login{
+  height: 100vh;
 }
