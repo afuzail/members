@@ -3,9 +3,23 @@ window.onload = function () {
 
     frm.validate({
         rules: {
-            username: "required",
-            password: "required"
+            email: {
+                required: true,
+                email: true
+            },
+            password: {
+                required: true,
+                minlength: 5
+            }
         },
+        messages: {
+            email: {
+                required: "Email is required"
+            },
+            password: {
+                required: "Password is required"
+            }
+        },  
         submitHandler: function (event) {
             if (frm.valid()){
                 return true;
