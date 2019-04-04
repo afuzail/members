@@ -1,3 +1,7 @@
+body{
+	font-family: 'Montserrat', sans-serif;
+}
+
 .bg-image {
 	background-image: url("../images/login.jpg");
 	background-size: cover;
