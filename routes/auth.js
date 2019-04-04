@@ -3,7 +3,10 @@ var router = express.Router();
 var csrf = require('csurf')
 var bodyParser = require('body-parser')
 var { check, validationResult } = require('express-validator/check')
-const { sanitizeBody } = require('express-validator/filter');
+const bcrypt = require('bcryptjs');
+
+// Load User model
+const User = require('../models/users');
 
 /** setup csrf route middlewares */
 var csrfProtection = csrf({ cookie: true })
@@ -63,14 +66,33 @@ const signupValidationOptions = [
         .isLength({ min: 5 }).withMessage('The password must be at least 5 chars long')
 ];
 
-router.post('/signup', signupValidationOptions, parseForm, csrfProtection, function (req, res, next) {
+router.post('/signup', signupValidationOptions, parseForm, csrfProtection, async function (req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(422).json({ errors: errors.array() });
         }
         
-        return res.json(req.body);
+        const { name, email, password } = req.body;
+        const user = await User.findOne({ email: email });
+        if (user) {
+            return res.json({"message": "user already exists"});
+        }else{
+            const newUser = new User({
+                name: name,
+                email: email,
+                password: password
+            })
+
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(newUser.password, salt);
+
+            newUser.password = hash;
+            const newUserRes = await newUser.save();
+
+            return res.json(newUserRes)
+        }
+        // return res.json(req.body);
     } catch (error) {
         res.json({ "message": error.message });
     }
