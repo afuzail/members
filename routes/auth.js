@@ -4,6 +4,7 @@ var csrf = require('csurf')
 var bodyParser = require('body-parser')
 var { check, validationResult } = require('express-validator/check')
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 // Load User model
 const User = require('../models/users');
@@ -11,6 +12,13 @@ const User = require('../models/users');
 /** setup csrf route middlewares */
 var csrfProtection = csrf({ cookie: true })
 var parseForm = bodyParser.urlencoded({ extended: false })
+
+
+// Logout
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/login');
+});
 
 /***********************************************************/
 /** Begin login */
@@ -25,17 +33,22 @@ const loginValidationOptions = [
         .isEmail().withMessage('must be valid email')
         .normalizeEmail(),
     check('password')
-    .isLength({ min: 5 }).withMessage('must be at least 5 chars long')
+        .isLength({ min: 5 }).withMessage('must be at least 5 chars long')
 ];
 
 router.post('/login', loginValidationOptions, parseForm, csrfProtection, function (req, res, next) {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-          return res.status(422).json({ errors: errors.array() });
+            return res.status(422).json({ errors: errors.array() });
         }
 
-        return res.json(req.body);
+        passport.authenticate('local', {
+            successRedirect: '/',
+            failureRedirect: '/login'
+        })(req, res, next);
+
+        // return res.json(req.body);
     } catch (error) {
         res.json({ "message": error.message });
     }
@@ -70,14 +83,14 @@ router.post('/signup', signupValidationOptions, parseForm, csrfProtection, async
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-          return res.status(422).json({ errors: errors.array() });
+            return res.status(422).json({ errors: errors.array() });
         }
-        
+
         const { name, email, password } = req.body;
         const user = await User.findOne({ email: email });
         if (user) {
-            return res.json({"message": "user already exists"});
-        }else{
+            return res.json({ "message": "user already exists" });
+        } else {
             const newUser = new User({
                 name: name,
                 email: email,
