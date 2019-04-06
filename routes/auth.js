@@ -45,7 +45,8 @@ router.post('/login', loginValidationOptions, parseForm, csrfProtection, functio
 
         passport.authenticate('local', {
             successRedirect: '/',
-            failureRedirect: '/login'
+            failureRedirect: '/login',
+            failureFlash: true
         })(req, res, next);
 
         // return res.json(req.body);
@@ -86,10 +87,19 @@ router.post('/signup', signupValidationOptions, parseForm, csrfProtection, async
             return res.status(422).json({ errors: errors.array() });
         }
 
+        console.log(req.session)
+
         const { name, email, password } = req.body;
         const user = await User.findOne({ email: email });
         if (user) {
-            return res.json({ "message": "user already exists" });
+            res.render('auth/signup', {
+                title: 'Plainsurf | Sign up',
+                csrfToken: req.csrfToken(),
+                layout: '/layouts/auth_layouts',
+                name: name,
+                email: email,
+                'error_msg': 'User already exists.'
+            });
         } else {
             const newUser = new User({
                 name: name,
@@ -103,11 +113,19 @@ router.post('/signup', signupValidationOptions, parseForm, csrfProtection, async
             newUser.password = hash;
             const newUserRes = await newUser.save();
 
-            return res.json(newUserRes)
+            req.flash('success_msg', 'You are now registered and can log in.');
+            res.redirect('/login');
         }
         // return res.json(req.body);
     } catch (error) {
-        res.json({ "message": error.message });
+        res.render('auth/signup', {
+            title: 'Plainsurf | Sign up',
+            csrfToken: req.csrfToken(),
+            layout: '/layouts/auth_layouts',
+            name: name,
+            email: email,
+            'error_msg': error.message
+        });
     }
 });
 /***********************************************************/

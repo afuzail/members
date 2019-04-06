@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const flash = require('connect-flash');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const passport = require('passport');
@@ -50,6 +51,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Connect flash
+app.use(flash());
+app.use(function (req, res, next) {
+	res.locals.error_msg = req.flash('error_msg');
+	res.locals.success_msg = req.flash('success_msg'),
+	res.locals.errors = req.flash('error');
+	next();
+});
 
 app.use('/', authRouter);
 app.use('/', indexRouter);
