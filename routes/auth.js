@@ -24,7 +24,7 @@ router.get('/logout', (req, res) => {
 /** Begin login */
 /***********************************************************/
 router.get('/login', csrfProtection, function (req, res, next) {
-    res.render('auth/login', { title: 'Plainsurf | Login', csrfToken: req.csrfToken(), layout: '/layouts/auth_layouts' });
+    res.render('auth/login', { title: 'Plainsurf | Login', csrfToken: req.csrfToken() });
 });
 
 
@@ -66,7 +66,7 @@ router.post('/login', loginValidationOptions, parseForm, csrfProtection, functio
 /** Begin signup */
 /***********************************************************/
 router.get('/signup', csrfProtection, function (req, res, next) {
-    res.render('auth/signup', { title: 'Plainsurf | Sign up', csrfToken: req.csrfToken(), layout: '/layouts/auth_layouts' });
+    res.render('auth/signup', { title: 'Plainsurf | Sign up', csrfToken: req.csrfToken()});
 });
 
 const signupValidationOptions = [

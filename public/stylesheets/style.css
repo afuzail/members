@@ -10,7 +10,7 @@ body{
 
 .image,
 .login {
-	height: 100vh;
+	height: calc(100vh - 59px);
 }
 
 input.error {
@@ -25,4 +25,23 @@ label.error {
 	margin-top: 0.25rem;
 	font-size: 80%;
 	color: #dc3545;
+}
+
+
+.bg-plainsurf{
+	background-color: #ffffff;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+}
+
+.navbar-brand img{
+	width: 30px;
+}
+
+.navbar-light .navbar-nav .nav-link{
+	font-size: 18px;
+    font-weight: 400;
 }
