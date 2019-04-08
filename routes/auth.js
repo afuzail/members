@@ -6,7 +6,7 @@ var { check, validationResult } = require('express-validator/check')
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 
-// Load User model
+/** Load User model */
 const User = require('../models/users');
 
 /** setup csrf route middlewares */
@@ -14,7 +14,7 @@ var csrfProtection = csrf({ cookie: true })
 var parseForm = bodyParser.urlencoded({ extended: false })
 
 
-// Logout
+/** Logout */
 router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/login');
@@ -59,14 +59,30 @@ router.post('/login', loginValidationOptions, parseForm, csrfProtection, functio
 /** End login */
 /***********************************************************/
 
+/***********************************************************/
+/** Begin login with google */
+/***********************************************************/
+router.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }));
 
+router.get('/auth/google/callback', function (req, res, next) {
+    passport.authenticate('google', { 
+        successRedirect: '/',
+        failureRedirect: '/login',
+        failureFlash: true
+    })(req, res, next);
+});
+
+
+/***********************************************************/
+/** End login with google */
+/***********************************************************/
 
 
 /***********************************************************/
 /** Begin signup */
 /***********************************************************/
 router.get('/signup', csrfProtection, function (req, res, next) {
-    res.render('auth/signup', { title: 'Plainsurf | Sign up', csrfToken: req.csrfToken()});
+    res.render('auth/signup', { title: 'Plainsurf | Sign up', csrfToken: req.csrfToken() });
 });
 
 const signupValidationOptions = [

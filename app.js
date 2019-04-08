@@ -25,6 +25,7 @@ mongoose.connect(db, { useNewUrlParser: true }).then(() =>
 
 // Passport Config
 require('./config/passport_strategy')(passport);
+require('./config/passport_google_strategy')(passport);
 
 
 // view engine setup
