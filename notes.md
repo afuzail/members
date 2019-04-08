@@ -1,7 +1,7 @@
 # Notes
 1. Login Page using passport (Done)
 2. Sign up page using passport (Done)
-3. Login using google 
+3. Login using google (Done)
 4. Show the categories of the workshops
 5. Show list of the workshops
 6. Enroll button on the workshop

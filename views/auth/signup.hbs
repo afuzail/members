@@ -7,7 +7,9 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-md-9 col-lg-8 mx-auto">
-                                <h3>SIGN UP</h3>
+                                <div class="g-text-center--xs g-margin-b-30--xs">
+                                    <h2 class="g-font-size-30--xs g-color--dark">Get Started for Free</h2>
+                                </div>
                                 <div id="errors-area">
                                     {{#if error_msg}}
                                         <div class="alert alert-danger">{{error_msg}}</div>
@@ -19,32 +21,37 @@
                                 </div>
                                 <form action="/signup" method="POST" id="signup_frm">
                                     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <div class="form-group">
+                                    <div class="g-margin-b-20--xs">
                                         <label for="name"  class="sr-only">Name</label>
-                                        <input type="name" name="name" id="name" class="form-control form-control-lg"
-                                            placeholder="Name" value="{{name}}">
+                                        <input type="name" name="name" id="name" class="form-control s-form-v4__input"
+                                            placeholder="Name" value="{{name}}" autocomplete="off">
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="g-margin-b-20--xs">
                                         <label for="email"  class="sr-only">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control form-control-lg"
-                                            placeholder="Email" value="{{email}}">
+                                        <input type="email" name="email" id="email" class="form-control s-form-v4__input"
+                                            placeholder="Email" value="{{email}}" autocomplete="off">
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="g-margin-b-30--xs">
                                         <label for="password"  class="sr-only">Password</label>
                                         <input type="password" name="password" id="password"
-                                            class="form-control form-control-lg" placeholder="Password">
+                                            class="form-control s-form-v4__input" placeholder="Password">
                                     </div>
-                                    <div class="form-group">
-                                        <button type="submit" name="auth_signup_submit" id="auth_signup_submit"
-                                            class="btn btn-primary btn-lg">Signup</button>
-                                    </div>
+                                    
+                                    <button type="submit" name="auth_signup_submit" id="auth_signup_submit"
+                                        class="text-uppercase btn-block s-btn s-btn--md s-btn--primary-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs">Signup</button>
 
 
-                                    <section class="signup_section">
+                                    <section class="g-margin-b-20--xs g-font-size-13--xs g-text-right--xs">
                                         <a href="/login">Already have account? <b>Login</b></a>
                                     </section>
+
+                                    <hr />
+
+                                    <div class="g-margin-b-20--xs">
+                                        <a href="/auth/google" class="bg-google-btn"></a>
+                                    </div>
                                 </form>
                             </div>
                         </div>

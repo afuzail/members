@@ -7,49 +7,52 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-md-9 col-lg-8 mx-auto">
-                                <h3>LOGIN</h3>
+                                <div class="g-text-center--xs g-margin-b-30--xs">
+                                    <h2 class="g-font-size-30--xs g-color--dark">Log in to Plainsurf</h2>
+                                </div>
                                 <div id="errors-area">
                                     {{#if error_msg}}
-                                        <div class="alert alert-danger">{{error_msg}}</div>
+                                    <div class="alert alert-danger">{{error_msg}}</div>
                                     {{/if}}
 
                                     {{#if errors}}
-                                        <div class="alert alert-danger">{{errors}}</div>
+                                    <div class="alert alert-danger">{{errors}}</div>
                                     {{/if}}
 
                                     {{#if success_msg}}
-                                        <div class="alert alert-success">{{success_msg}}</div>
+                                    <div class="alert alert-success">{{success_msg}}</div>
                                     {{/if}}
                                 </div>
 
                                 <form action="/login" method="POST" id="login_frm">
                                     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <div class="form-group">
+                                    <div class="g-margin-b-20--xs">
                                         <label for="email" class="sr-only">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control form-control-lg"
-                                            placeholder="Email">
+                                        <input type="email" name="email" id="email"
+                                            class="form-control s-form-v4__input" placeholder="* Email" autocomplete="off">
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="g-margin-b-20--xs">
                                         <label for="password" class="sr-only">Password</label>
                                         <input type="password" name="password" id="password"
-                                            class="form-control form-control-lg" placeholder="Password">
+                                            class="form-control s-form-v4__input"
+                                            placeholder="* Password"  autocomplete="off">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="g-margin-b-20--xs g-font-size-13--xs g-text-right--xs">
                                         <a href="/forgot-password">I forgot my password</a>
                                     </div>
-                                    <div class="form-group">
-                                        <button type="submit" name="auth_login_submit" id="auth_login_submit"
-                                            class="btn btn-primary btn-lg">Login</button>
-                                    </div>
-                                    <div class="form-group">
-                                        <a href="/auth/google">Sign In with Google</a>
-                                    </div>
+                                    
+                                    <button type="submit" name="auth_login_submit" id="auth_login_submit"
+                                        class="text-uppercase btn-block s-btn s-btn--md s-btn--primary-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs">Login</button>
 
-
-                                    <section class="signup_section">
+                                    <section class="g-font-size-13--xs g-text-center--xs">
                                         <a href="/signup">Not a member yet? <b>Sign up</b></a>
                                     </section>
+
+                                    <hr />
+                                    <div class="g-margin-b-20--xs">
+                                        <a href="/auth/google" class="bg-google-btn"></a>
+                                    </div>
                                 </form>
                             </div>
                         </div>
