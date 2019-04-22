@@ -7,12 +7,12 @@ Project contains following features
 ## How do i install this project?
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
+## Prerequisites
 - Node.js (10.15.3)
 - npm (6.4.1)
 - MongoDB (4.0.8)
 
-### Installing
+## Installing
 1. Clone the repository
 `git clone https://github.com/fuzail-ahmed/members.git`
 2. Install the packages by `npm i`
@@ -21,9 +21,9 @@ These instructions will get you a copy of the project up and running on your loc
 5. Now just run it `npm start` or `nodemon start`
 
 
-### Authors
+## Authors
 * Fuzail Ahmed
 * Yusuf shaikh
 
-### License
+## License
 This project is licensed under the GPL-3.0 License - see the LICENSE.md file for details
