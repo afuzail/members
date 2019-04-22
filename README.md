@@ -19,3 +19,11 @@ These instructions will get you a copy of the project up and running on your loc
 3. Change the configurations according to your convinence. change the key's used in the applications which resides in the `config/keys.js`
 4. Done. :) 
 5. Now just run it `npm start` or `nodemon start`
+
+
+### Authors
+* Fuzail Ahmed
+* Yusuf shaikh
+
+### License
+This project is licensed under the GPL-3.0 License - see the LICENSE.md file for details
