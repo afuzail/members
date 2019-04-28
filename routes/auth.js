@@ -5,6 +5,10 @@ var bodyParser = require('body-parser')
 var { check, validationResult } = require('express-validator/check')
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const email_username = require('../config/keys').EMAIL_USERNAME;
+const email_password = require('../config/keys').EMAIL_PASSWORD;
 
 /** Load User model */
 const User = require('../models/users');
@@ -65,7 +69,7 @@ router.post('/login', loginValidationOptions, parseForm, csrfProtection, functio
 router.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }));
 
 router.get('/auth/google/callback', function (req, res, next) {
-    passport.authenticate('google', { 
+    passport.authenticate('google', {
         successRedirect: '/',
         failureRedirect: '/login',
         failureFlash: true
@@ -146,6 +150,89 @@ router.post('/signup', signupValidationOptions, parseForm, csrfProtection, async
 });
 /***********************************************************/
 /** End signup */
+/***********************************************************/
+
+/***********************************************************/
+/** Begin forgot password */
+/***********************************************************/
+router.get('/forgot-password', csrfProtection, function (req, res, next) {
+    res.render('auth/forgot-password', { title: 'Plainsurf | Login', csrfToken: req.csrfToken() });
+});
+
+
+const forgotPasswordValidationOptions = [
+    check('email')
+        .isEmail().withMessage('must be valid email')
+        .normalizeEmail()
+];
+
+router.post('/forgot-password', forgotPasswordValidationOptions, parseForm, csrfProtection, async function (req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
+
+        /** Check user exists in the database */
+        const user = await User.findOne({ email: req.body.email });
+
+        /** Create forgotPasswordToken and Time for him for user */
+        if (user) {
+            const buffer = await crypto.randomBytes(20);
+            user.resetPasswordToken = buffer.toString('hex');
+            user.resetPasswordExpires = Date.now() + 3600000;
+
+            const isSaved = await user.save();
+
+            if (isSaved) {
+                const smtp_transport = nodemailer.createTransport({
+                    service: 'SendGrid',
+                    auth: {
+                        user: email_username,
+                        pass: email_password
+                    },
+                    tls: { rejectUnauthorized: false },
+                    debug: true,
+                    secure: false
+                });
+
+                const mail_options = {
+                    to: user.email,
+                    from: 'fuzail1280@gmail.com',
+                    subject: 'Plainsurf Password Reset',
+                    text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+                        'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                        'http://' + req.headers.host + '/reset-password/' + user.resetPasswordToken + '\n\n' +
+                        'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+                };
+
+
+                const isMailSent = await smtp_transport.sendMail(mail_options);
+
+                if (isMailSent) {
+                    req.flash('success_msg', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+                    res.redirect('/login');
+                } else {
+                    req.flash('error_msg', 'Sorry :(, Problem in email sending.');
+                    res.redirect('/forgot-password');
+                }
+            }
+        } else {
+            req.flash('error_msg', 'Email does not exists.');
+            res.redirect('/forgot-password');
+        }
+
+        /** Email the user */
+
+        return res.json(req.body);
+    } catch (error) {
+        console.log(error);
+        res.json({ "message": error.message });
+    }
+
+});
+/***********************************************************/
+/** End forgot password */
 /***********************************************************/
 
 module.exports = router;
