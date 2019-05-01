@@ -1,0 +1,11 @@
+var express = require('express');
+
+function loggedIn(req, res, next) {
+	if (req.user) {
+		next();
+	} else {
+		res.redirect('/login');
+	}
+};
+
+module.exports = loggedIn;

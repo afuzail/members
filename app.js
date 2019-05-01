@@ -32,6 +32,7 @@ require('./config/passport_google_strategy')(passport);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -58,6 +59,8 @@ app.use(function (req, res, next) {
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.success_msg = req.flash('success_msg'),
 	res.locals.errors = req.flash('error');
+	/** If logged in */
+	res.locals.user = req.user;
 	next();
 });
 

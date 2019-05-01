@@ -14,9 +14,18 @@ const email_password = require('../config/keys').EMAIL_PASSWORD;
 const User = require('../models/users');
 
 /** setup csrf route middlewares */
-var csrfProtection = csrf({ cookie: true })
-var parseForm = bodyParser.urlencoded({ extended: false })
-
+const csrfProtection = csrf({ cookie: true })
+const parseForm = bodyParser.urlencoded({ extended: false })
+const smtp_transport = nodemailer.createTransport({
+    service: 'SendGrid',
+    auth: {
+        user: email_username,
+        pass: email_password
+    },
+    tls: { rejectUnauthorized: false },
+    debug: true,
+    secure: false
+});
 
 /** Logout */
 router.get('/logout', (req, res) => {
@@ -141,7 +150,6 @@ router.post('/signup', signupValidationOptions, parseForm, csrfProtection, async
         res.render('auth/signup', {
             title: 'Plainsurf | Sign up',
             csrfToken: req.csrfToken(),
-            layout: '/layouts/auth_layouts',
             name: name,
             email: email,
             'error_msg': error.message
@@ -185,17 +193,6 @@ router.post('/forgot-password', forgotPasswordValidationOptions, parseForm, csrf
             const isSaved = await user.save();
 
             if (isSaved) {
-                const smtp_transport = nodemailer.createTransport({
-                    service: 'SendGrid',
-                    auth: {
-                        user: email_username,
-                        pass: email_password
-                    },
-                    tls: { rejectUnauthorized: false },
-                    debug: true,
-                    secure: false
-                });
-
                 const mail_options = {
                     to: user.email,
                     from: 'fuzail1280@gmail.com',
@@ -227,7 +224,8 @@ router.post('/forgot-password', forgotPasswordValidationOptions, parseForm, csrf
         return res.json(req.body);
     } catch (error) {
         console.log(error);
-        res.json({ "message": error.message });
+        req.flash('error_msg', 'We are very sorry :(, Because of some technical problem we are unable to process your request.');
+        return res.redirect('/forgot-password');
     }
 
 });
@@ -235,4 +233,87 @@ router.post('/forgot-password', forgotPasswordValidationOptions, parseForm, csrf
 /** End forgot password */
 /***********************************************************/
 
+
+/***********************************************************/
+/** Begin reset password */
+/***********************************************************/
+router.get('/reset-password/:token', csrfProtection, async function (req, res, next) {
+    try {
+        const token = req.params.token;
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            req.flash('error_msg', 'Password reset token is invalid or has expired.');
+            return res.redirect('/forgot-password');
+        }
+
+        res.render('auth/reset-password', { title: 'Plainsurf | Reset Password', csrfToken: req.csrfToken(), resetPasswordToken: token });
+    } catch (error) {
+        console.log(error.message);
+        req.flash('error_msg', 'We are very sorry :(, Because of some technical problem we are unable to process your request.');
+        return res.redirect('/forgot-password');
+    }
+});
+
+
+router.post('/reset-password/:token', parseForm, csrfProtection, async function (req, res, next) {
+    const token = req.params.token;
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
+
+        
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            req.flash('error_msg', 'Password reset token is invalid or has expired.');
+            return res.redirect('/forgot-password');
+        }
+
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(req.body.password, salt);
+
+        user.password = hash;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+
+        const result = await user.save();
+        if (result) {
+            const mail_options = {
+                to: user.email,
+                from: 'fuzail1280@gmail.com',
+                subject: 'Your password has been changed',
+                text: 'Hello,\n\n' +
+                    'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+            };
+
+            const isMailSent = await smtp_transport.sendMail(mail_options);
+
+            if (isMailSent) {
+                req.flash('success_msg', 'Success! Your password has been changed.');
+                res.redirect('/');
+            } else {
+                req.flash('error_msg', 'Sorry :(, Problem in email sending, but password changed successfully.');
+                res.redirect('/');
+            }
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        req.flash('error_msg', 'We are very sorry :(, Because of some technical problem we are unable to process your request.');
+        return res.redirect(`/reset-password/${token}`);
+    }
+});
+/***********************************************************/
+/** End reset password */
+/***********************************************************/
 module.exports = router;

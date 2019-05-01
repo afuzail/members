@@ -3,6 +3,7 @@ Project contains following features
 - User Sign up
 - User Login
 - Forgot Password
+- Reset Password
 - Login with google
 
 ## How do i install this project?

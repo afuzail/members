@@ -15,10 +15,14 @@ const UserSchema = new mongoose.Schema({
     type: String
   },
   resetPasswordExpires: {
-    type: Date
+    type: Number
   },
   googleId: {
     type: String
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
   createdAt: {
     type: Date,
